@@ -26,8 +26,6 @@ public class Robot extends TimedRobot {
   private int atis_boolean = 0;
   private int intake_boolean = 0;
   private double palet_double = 0.0;
-  private double xSpeed = 0.0;
-  PIDController pid = new PIDController(0.1, 0, 0.0);
   private double arcade_x = 0.0;
   private double arcade_y = 0.0;
   private final Timer timer = new Timer();
@@ -52,7 +50,6 @@ public class Robot extends TimedRobot {
     double yaw = getYaw();
     atis.set(1);
     robot_drive.arcadeDrive(arcade_x, arcade_y);
-    //System.out.println("Yaw : " + yaw);
       if(hasTarget()){
         System.out.println(range);
         if(yaw > 10){
