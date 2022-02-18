@@ -1,8 +1,5 @@
 package frc.robot;
 
-import org.photonvision.PhotonUtils;
-
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -11,8 +8,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Tanjant;
 
 public class Robot extends TimedRobot {
@@ -28,13 +23,15 @@ public class Robot extends TimedRobot {
   private double atis_boolean = 0;
   private int intake_boolean = 0;
   private static double palet_double = 0.0;
-  private static double arcade_x = 0.0;
-  private static double arcade_y = 0.0;
+  private static double arcade_x_auto = 0.0;
+  private static double arcade_y_auto = 0.0;
   private static double arcade_x_teleop = 0.0;
   private static double arcade_y_teleop = 0.0;
   private static Timer timer = new Timer();
-  double palet_status = 0.0;
-  double atis_status = 0.0;
+  private static double palet_status = 0.0;
+  private static double atis_status = 0.0;
+
+  private static double target_distance = 1.50;
   
   @Override
   public void robotInit() {
@@ -54,10 +51,12 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     //e = olimpiyat_zubeyir_teoremi(getPitch(), 0.67, 2.5, 40);
     //double yaw = getYaw();
+    double pitch_teleop = getPitch();
+    double range = olimpiyat_zubeyir_teoremi(pitch_teleop, 0.67, 2.5, 50);
     atis.set(1);
-    align_robot_auto();
-    distance_set_auto();
-    robot_drive.arcadeDrive(arcade_x, arcade_y);
+    align_robot(arcade_x_auto, arcade_y_auto);
+    distance_set_auto(arcade_x_auto, arcade_y_auto, range, target_distance);
+    robot_drive.arcadeDrive(arcade_x_auto, arcade_y_auto);
   }
 
   @Override
@@ -69,13 +68,14 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
     //robot_drive.arcadeDrive(joystick.getX() * 0.9, joystick.getY()* -1 * 0.9);
-    robot_drive.arcadeDrive(arcade_x_teleop, arcade_y_teleop);
+    //robot_drive.arcadeDrive(arcade_x_teleop, arcade_y_teleop);
+    robot_drive.arcadeDrive(arcade_x_teleop, arcade_y_teleop, true);
     atis.set(atis_boolean);
     intake.set(intake_boolean);
     palet.set(palet_double);
 
     if(joystick.getRawButton(10)){
-      align_robot_teleop(arcade_x_teleop, arcade_y_teleop);
+      align_robot(arcade_x_teleop, arcade_y_teleop);
     }
     else{
       arcade_y_teleop = joystick.getY() * -1;
@@ -129,7 +129,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    robot_drive.arcadeDrive(-0.6, 0.4);
+    robot_drive.curvatureDrive(arcade_x_teleop, arcade_y_teleop, true);
   }
 
   @Override
@@ -162,15 +162,12 @@ public class Robot extends TimedRobot {
     else
       return deger * -1;
   }
-  public static void distance_set_auto(){
+  public static void distance_set_auto(double arcade_x, double arcade_y, double range, double target_distance){
     if(hasTarget()){
-      double pitch_teleop = getPitch();
-      double range = olimpiyat_zubeyir_teoremi(pitch_teleop, 0.67, 2.5, 50);
-      System.out.println(range);
-      if(range > 1.65){
+      if(range > (target_distance + 0.15)){
         arcade_y = 0.4;
       }
-      else if(range < 1.35){
+      else if(range < (target_distance - 0.15)){
         arcade_y = -0.4;
       }
       else{
@@ -185,7 +182,9 @@ public class Robot extends TimedRobot {
       
     }
   }
-  public static void align_robot_teleop(double arcade_x, double arcade_y){
+
+
+  public static void align_robot(double arcade_x, double arcade_y){
     if(hasTarget()){
     double yaw_teleop = getYaw();
     if(yaw_teleop > 3){
@@ -202,21 +201,5 @@ public class Robot extends TimedRobot {
     }
   }
   }
-  public static void align_robot_auto(){
-    if(hasTarget()){
-    double yaw_teleop = getYaw();
-    if(yaw_teleop > 3){
-      arcade_x = 0.45;
-      arcade_y = 0.4;
-    }
-    else if(yaw_teleop < -3){
-      arcade_x = -0.45;
-      arcade_y = 0.4;
-    }
-    else{
-      arcade_x = 0;
-      arcade_y = 0;
-    }
-  }
-  }
+
 }
