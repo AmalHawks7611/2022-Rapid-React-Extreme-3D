@@ -27,11 +27,13 @@ public class Robot extends TimedRobot {
   private static double arcade_y_auto = 0.0;
   private static double arcade_x_teleop = 0.0;
   private static double arcade_y_teleop = 0.0;
+  private static double arcade_x = 0.0;
+  private static double arcade_y = 0.0;
   private static Timer timer = new Timer();
   private static double palet_status = 0.0;
   private static double atis_status = 0.0;
 
-  private static double target_distance = 1.50;
+  private static double target_distance = 1.20;
   
   @Override
   public void robotInit() {
@@ -53,10 +55,12 @@ public class Robot extends TimedRobot {
     //double yaw = getYaw();
     double pitch_teleop = getPitch();
     double range = olimpiyat_zubeyir_teoremi(pitch_teleop, 0.67, 2.5, 50);
+    
     atis.set(1);
-    align_robot(arcade_x_auto, arcade_y_auto);
-    distance_set_auto(arcade_x_auto, arcade_y_auto, range, target_distance);
-    robot_drive.arcadeDrive(arcade_x_auto, arcade_y_auto);
+    //align_robot(arcade_x_auto, arcade_y_auto);
+    align_robot();
+    distance_set_auto(range, target_distance);
+    robot_drive.arcadeDrive(arcade_x, arcade_y);
   }
 
   @Override
@@ -69,17 +73,18 @@ public class Robot extends TimedRobot {
     
     //robot_drive.arcadeDrive(joystick.getX() * 0.9, joystick.getY()* -1 * 0.9);
     //robot_drive.arcadeDrive(arcade_x_teleop, arcade_y_teleop);
-    robot_drive.arcadeDrive(arcade_x_teleop, arcade_y_teleop, true);
+    robot_drive.arcadeDrive(arcade_x, arcade_y, true);
     atis.set(atis_boolean);
     intake.set(intake_boolean);
     palet.set(palet_double);
 
     if(joystick.getRawButton(10)){
-      align_robot(arcade_x_teleop, arcade_y_teleop);
+      //align_robot(arcade_x_teleop, arcade_y_teleop);
+      align_robot();
     }
     else{
-      arcade_y_teleop = joystick.getY() * -1;
-      arcade_x_teleop = joystick.getZ();
+      arcade_y = joystick.getY() * -1;
+      arcade_x = joystick.getZ() * 0.7;
     }
     if(joystick.getRawButton(7)){
       atis.set(-1);
@@ -162,7 +167,7 @@ public class Robot extends TimedRobot {
     else
       return deger * -1;
   }
-  public static void distance_set_auto(double arcade_x, double arcade_y, double range, double target_distance){
+  public static void distance_set_auto(double range, double target_distance){
     if(hasTarget()){
       if(range > (target_distance + 0.15)){
         arcade_y = 0.4;
@@ -184,20 +189,20 @@ public class Robot extends TimedRobot {
   }
 
 
-  public static void align_robot(double arcade_x, double arcade_y){
+  public static void align_robot(){
     if(hasTarget()){
     double yaw_teleop = getYaw();
     if(yaw_teleop > 3){
-      arcade_x_teleop = 0.4;
-      arcade_y_teleop = 0.4;
+      arcade_x = 0.4;
+      arcade_y = 0.35;
     }
     else if(yaw_teleop < -3){
-      arcade_x_teleop = -0.4;
-      arcade_y_teleop = 0.4;
+      arcade_x = -0.4;
+      arcade_y = 0.35;
     }
     else{
-      arcade_x_teleop = 0;
-      arcade_y_teleop = 0;
+      arcade_x = 0;
+      arcade_y = 0;
     }
   }
   }
