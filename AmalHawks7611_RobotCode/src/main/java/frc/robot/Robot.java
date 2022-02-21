@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
-import frc.robot.Tanjant;
 
 public class Robot extends TimedRobot {
   private static Victor intake = new Victor(1);
@@ -23,17 +22,13 @@ public class Robot extends TimedRobot {
   private double atis_boolean = 0;
   private int intake_boolean = 0;
   private static double palet_double = 0.0;
-  private static double arcade_x_auto = 0.0;
-  private static double arcade_y_auto = 0.0;
-  private static double arcade_x_teleop = 0.0;
-  private static double arcade_y_teleop = 0.0;
   private static double arcade_x = 0.0;
   private static double arcade_y = 0.0;
   private static Timer timer = new Timer();
-  private static double palet_status = 0.0;
-  private static double atis_status = 0.0;
-
-  private static double target_distance = 1.20;
+  private static double CAM_HEIGHT = 0.67;
+  private static double TARGET_HEIGHT = 2.5;
+  private static double CAM_PITCH = 50.0;
+  private static double TARGET_DISTANCE = 1.20;
   
   @Override
   public void robotInit() {
@@ -51,16 +46,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    //e = olimpiyat_zubeyir_teoremi(getPitch(), 0.67, 2.5, 40);
-    //double yaw = getYaw();
-    double pitch_teleop = getPitch();
-    double range = olimpiyat_zubeyir_teoremi(pitch_teleop, 0.67, 2.5, 50);
+    double range = olimpiyat_zubeyir_teoremi(CAM_HEIGHT, TARGET_HEIGHT, CAM_PITCH);
     
     atis.set(1);
-    //align_robot(arcade_x_auto, arcade_y_auto);
     align_robot();
-    distance_set_auto(range, target_distance);
-    robot_drive.arcadeDrive(arcade_x, arcade_y);
+    distance_set_auto(range, TARGET_DISTANCE);
   }
 
   @Override
@@ -70,16 +60,12 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    
-    //robot_drive.arcadeDrive(joystick.getX() * 0.9, joystick.getY()* -1 * 0.9);
-    //robot_drive.arcadeDrive(arcade_x_teleop, arcade_y_teleop);
     robot_drive.arcadeDrive(arcade_x, arcade_y, true);
     atis.set(atis_boolean);
     intake.set(intake_boolean);
     palet.set(palet_double);
 
     if(joystick.getRawButton(10)){
-      //align_robot(arcade_x_teleop, arcade_y_teleop);
       align_robot();
     }
     else{
@@ -134,7 +120,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testPeriodic() {
-    robot_drive.curvatureDrive(arcade_x_teleop, arcade_y_teleop, true);
   }
 
   @Override
@@ -155,9 +140,9 @@ public class Robot extends TimedRobot {
     NetworkTableEntry result = table.getEntry("targetPitch");
     return result.getDouble(0);
   }
-  public static double olimpiyat_zubeyir_teoremi(double pitch, double cam_height, double target_height, double cam_pitch){
+  public static double olimpiyat_zubeyir_teoremi(double cam_height, double target_height, double cam_pitch){
+    double pitch = getPitch();
     pitch = Math.round(pitch);
-    //double result = (max-min) * Tanjant.tan(90 - ((int)pitch) + 45);
     double result = (target_height - cam_height) / Tanjant.tan(((int)pitch) + (int)cam_pitch);
     return result;
   }
