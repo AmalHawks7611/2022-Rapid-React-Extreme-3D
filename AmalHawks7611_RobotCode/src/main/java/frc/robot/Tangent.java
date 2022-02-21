@@ -1,5 +1,5 @@
 package frc.robot;
-public class Tanjant {
+public class Tangent {
     
     public static double tan(int x){
         if(x == 89) return 57.289;

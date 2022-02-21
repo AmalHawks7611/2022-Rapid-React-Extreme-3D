@@ -7,9 +7,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
 
 public class Robot extends TimedRobot {
+  private static PWMSparkMax actuator = new PWMSparkMax(0);
   private static Victor intake = new Victor(1);
   private static Victor palet = new Victor(2);
   private static Victor atis = new Victor(3);
@@ -66,6 +68,13 @@ public class Robot extends TimedRobot {
     atis.set(atis_double);
     intake.set(intake_double);
     palet.set(palet_double);
+
+    if(joystick.getRawButton(12)){
+      actuator.set(1);
+    }
+    else{
+      actuator.set(0);
+    }
 
     if(joystick.getRawButton(10)){
       align_robot();
@@ -126,7 +135,7 @@ public class Robot extends TimedRobot {
   public static double olimpiyat_zubeyir_teoremi(double cam_height, double target_height, double cam_pitch){
     double pitch = getPitch();
     pitch = Math.round(pitch);
-    double result = (target_height - cam_height) / Tanjant.tan(((int)pitch) + (int)cam_pitch);
+    double result = (target_height - cam_height) / Tangent.tan(((int)pitch) + (int)cam_pitch);
     return result;
   }
   public double mutlak_samet(double deger){
