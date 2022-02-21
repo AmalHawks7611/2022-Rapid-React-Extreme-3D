@@ -44,6 +44,8 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     timer.reset();
+    atis.set(0);
+    palet.set(0);
   }
   @Override
   public void autonomousInit() {
@@ -52,6 +54,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    robot_drive.arcadeDrive(arcade_x, arcade_y);
     double range = olimpiyat_zubeyir_teoremi(CAM_HEIGHT, TARGET_HEIGHT, CAM_PITCH);
     
     atis.set(1);
@@ -64,18 +67,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    robot_drive.arcadeDrive(arcade_x, arcade_y, true);
+    robot_drive.arcadeDrive(arcade_x, arcade_y);
     atis.set(atis_double);
     intake.set(intake_double);
     palet.set(palet_double);
-
-    if(joystick.getRawButton(12)){
-      actuator.set(1);
-    }
-    else{
-      actuator.set(0);
-    }
-
     if(joystick.getRawButton(10)){
       align_robot();
     }
@@ -171,11 +166,11 @@ public class Robot extends TimedRobot {
     double yaw_teleop = getYaw();
     if(yaw_teleop > 3){
       arcade_x = 0.4;
-      arcade_y = 0.35;
+      arcade_y = 0.3;
     }
     else if(yaw_teleop < -3){
       arcade_x = -0.4;
-      arcade_y = 0.35;
+      arcade_y = 0.3;
     }
     else{
       arcade_x = 0;
