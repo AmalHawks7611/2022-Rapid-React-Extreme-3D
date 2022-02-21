@@ -19,8 +19,8 @@ public class Robot extends TimedRobot {
   private static Joystick joystick = new Joystick(0);
   private static NetworkTableInstance photon = NetworkTableInstance.create();
   private static NetworkTable table = photon.getTable("photonvision").getSubTable("camera");
-  private double atis_boolean = 0;
-  private int intake_boolean = 0;
+  private double atis_double = 0;
+  private int intake_double = 0;
   private static double palet_double = 0.0;
   private static double arcade_x = 0.0;
   private static double arcade_y = 0.0;
@@ -37,7 +37,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    
+  }
+
+  @Override
+  public void disabledInit() {
+    timer.reset();
   }
   @Override
   public void autonomousInit() {
@@ -54,15 +58,13 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopInit() {
-    timer.reset();
-  }
+  public void teleopInit() {}
 
   @Override
   public void teleopPeriodic() {
     robot_drive.arcadeDrive(arcade_x, arcade_y, true);
-    atis.set(atis_boolean);
-    intake.set(intake_boolean);
+    atis.set(atis_double);
+    intake.set(intake_double);
     palet.set(palet_double);
 
     if(joystick.getRawButton(10)){
@@ -77,25 +79,25 @@ public class Robot extends TimedRobot {
     }
 
     if(joystick.getRawButtonReleased(1)){
-      if(atis_boolean == 0){
-        atis_boolean = 1;
+      if(atis_double == 0){
+        atis_double = 1;
       }
-      else if(atis_boolean == 1){
-        atis_boolean = 0;
+      else if(atis_double == 1){
+        atis_double = 0;
       }
       else{
-        atis_boolean = 0;
+        atis_double = 0;
       }
     }
     if(joystick.getRawButtonReleased(2)){
-      if(intake_boolean == 0){
-        intake_boolean = 1;
+      if(intake_double == 0){
+        intake_double = 1;
       }
-      else if(intake_boolean == 1){
-       intake_boolean = 0;
+      else if(intake_double == 1){
+       intake_double = 0;
       }
       else{
-        intake_boolean = 0;
+        intake_double = 0;
       }
     }
     if(joystick.getRawButton(6)){
@@ -108,25 +110,6 @@ public class Robot extends TimedRobot {
       palet_double = 0;
     }
   }
-
-  @Override
-  public void disabledInit() {}
-
-  @Override
-  public void disabledPeriodic() {}
-
-  @Override
-  public void testInit() {}
-
-  @Override
-  public void testPeriodic() {
-  }
-
-  @Override
-  public void simulationInit() {}
-
-  @Override
-  public void simulationPeriodic() {}
   
   public static boolean hasTarget(){
     NetworkTableEntry result = table.getEntry("hasTarget");
