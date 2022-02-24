@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
   private static Timer timer = new Timer();
   private static double CAM_HEIGHT = 0.67;
   private static double TARGET_HEIGHT = 2.5;
-  private static double CAM_PITCH = 50.0;
+  private static double CAM_PITCH = 55.0;
   private static double TARGET_DISTANCE = 3.15;
   private double atis_devir = 0.8;
   
