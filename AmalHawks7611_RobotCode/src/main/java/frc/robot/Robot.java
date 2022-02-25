@@ -21,9 +21,10 @@ public class Robot extends TimedRobot {
   private static Joystick joystick = new Joystick(0);
   private static NetworkTableInstance photon = NetworkTableInstance.create();
   private static NetworkTable table = photon.getTable("photonvision").getSubTable("camera");
-  private double atis_double = 0;
-  private int intake_double = 0;
+  private static double atis_double = 0;
+  private static double intake_double = 0;
   private static double palet_double = 0.0;
+  private static double actuator_double = 1.0;
   private static double arcade_x = 0.0;
   private static double arcade_y = 0.0;
   private static Timer timer = new Timer();
@@ -72,6 +73,17 @@ public class Robot extends TimedRobot {
     atis.set(atis_double);
     intake.set(intake_double);
     palet.set(palet_double);
+    actuator.set(-1);
+    System.out.println(actuator.get());
+    if(joystick.getRawButtonReleased(8)){
+      if(actuator_double == 0){
+        actuator_double = 1.0;
+      }
+      else if(actuator_double == 1.0){
+        actuator_double = 0;
+      }
+    }
+
     if(joystick.getRawButton(10)){
       align_robot();
     }
