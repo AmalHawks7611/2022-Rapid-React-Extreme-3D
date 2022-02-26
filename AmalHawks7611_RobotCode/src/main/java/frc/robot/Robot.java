@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.motorcontrol.Victor;
 
 public class Robot extends TimedRobot {
   private static PWMSparkMax actuator = new PWMSparkMax(0);
+  private static PWMSparkMax samet_actuator = new PWMSparkMax(6);
   private static Victor intake = new Victor(1);
   private static Victor palet = new Victor(2);
   private static Victor atis = new Victor(3);
@@ -24,19 +25,22 @@ public class Robot extends TimedRobot {
   private static double atis_double = 0;
   private static double intake_double = 0;
   private static double palet_double = 0.0;
-  private static double actuator_double = 1.0;
+  private static double actuator_double = 0;
+  private static double samet_actuator_double = 1.0;
   private static double arcade_x = 0.0;
   private static double arcade_y = 0.0;
   private static Timer timer = new Timer();
   private static double CAM_HEIGHT = 0.67;
-  private static double TARGET_HEIGHT = 2.5;
-  private static double CAM_PITCH = 55.0;
-  private static double TARGET_DISTANCE = 3.15;
-  private double atis_devir = 0.8;
+  private static double TARGET_HEIGHT = 2.75;
+  private static double CAM_PITCH = 53.0;
+  private static double TARGET_DISTANCE = 1.5;
+  private double atis_devir = 0.9;
+  private double direction_boolean = 1.0;
   
   @Override
   public void robotInit() {
     photon.startClient("10.76.11.102");
+
   }
 
   @Override
@@ -58,7 +62,7 @@ public class Robot extends TimedRobot {
   public void autonomousPeriodic() {
     robot_drive.arcadeDrive(arcade_x, arcade_y);
     double range = olimpiyat_zubeyir_teoremi(CAM_HEIGHT, TARGET_HEIGHT, CAM_PITCH);
-    
+    System.out.println(range);
     atis.set(1);
     align_robot();
     distance_set_auto(range, TARGET_DISTANCE);
@@ -73,8 +77,9 @@ public class Robot extends TimedRobot {
     atis.set(atis_double);
     intake.set(intake_double);
     palet.set(palet_double);
-    actuator.set(-1);
-    System.out.println(actuator.get());
+    actuator.set(actuator_double);
+    samet_actuator.set(samet_actuator_double);
+
     if(joystick.getRawButtonReleased(8)){
       if(actuator_double == 0){
         actuator_double = 1.0;
@@ -83,14 +88,37 @@ public class Robot extends TimedRobot {
         actuator_double = 0;
       }
     }
+    if(joystick.getRawButtonReleased(11)){
+      if(samet_actuator_double == 1.0){
+        samet_actuator_double = -1.0;
+      }
+      else if(samet_actuator_double == -1.0){
+        samet_actuator_double = 1.0;
+      }
+    }
 
     if(joystick.getRawButton(10)){
       align_robot();
     }
     else{
-      arcade_y = joystick.getY() * -1;
-      arcade_x = joystick.getZ() * 0.7;
+      if(slider_position() >= 0.5){
+      arcade_y = joystick.getY() * -1 * direction_boolean;
+      arcade_x = joystick.getZ() * 0.7 * direction_boolean;
+      }
+      else{
+      arcade_y = joystick.getY() * -1 * 0.5 * direction_boolean;
+      arcade_x = joystick.getZ() * 0.5;
+      }
     }
+    if(joystick.getRawButtonReleased(9)){
+      if(direction_boolean == 1.0)
+        direction_boolean = -1.0;
+      else if(direction_boolean == -1.0)
+        direction_boolean = 1.0;
+      else
+        direction_boolean = 1.0;
+    }
+    
     if(joystick.getRawButton(7)){
       atis.set(-1);
     }
@@ -178,11 +206,11 @@ public class Robot extends TimedRobot {
     if(hasTarget()){
     double yaw_teleop = getYaw();
     if(yaw_teleop > 3){
-      arcade_x = 0.4;
+      arcade_x = 0.45;
       arcade_y = 0.3;
     }
     else if(yaw_teleop < -3){
-      arcade_x = -0.4;
+      arcade_x = -0.45;
       arcade_y = 0.3;
     }
     else{
@@ -190,6 +218,9 @@ public class Robot extends TimedRobot {
       arcade_y = 0;
     }
   }
+  }
+  public static double slider_position(){
+    return joystick.getRawAxis(3) * -1;
   }
 
 }
